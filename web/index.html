@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wayfinder — Gale Crater EVA planner</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<canvas id="map"></canvas>
+
+<header class="topbar">
+  <div class="brand"><span class="mark"></span>WAYFINDER</div>
+  <div class="loc"><span id="site">Gale Crater</span><span class="sep">·</span><span id="sol">Sol 4995</span></div>
+  <div class="coords" id="coords">—</div>
+</header>
+
+<aside class="panel left">
+  <section>
+    <h2>Endpoints</h2>
+    <div class="ep" data-ep="a">
+      <span class="dot a">A</span>
+      <div class="ep-txt"><b>Start</b><small id="a-lonlat">—</small></div>
+      <button id="set-a" class="mini">Set</button>
+    </div>
+    <div class="ep" data-ep="b">
+      <span class="dot b">B</span>
+      <div class="ep-txt"><b>Destination</b><small id="b-lonlat">—</small></div>
+      <button id="set-b" class="mini">Set</button>
+    </div>
+    <button id="swap" class="wide">Swap A &#8646; B</button>
+  </section>
+
+  <section>
+    <h2>EVA budget <span class="val" id="budget-val">360 min</span></h2>
+    <input id="budget" type="range" min="60" max="480" step="15" value="360">
+    <div class="scale"><span>1 h</span><span>8 h</span></div>
+  </section>
+
+  <section>
+    <h2>Layers</h2>
+    <label class="chk"><input type="checkbox" id="lyr-terrain" checked><span>Terrain relief</span></label>
+    <label class="chk"><input type="checkbox" id="lyr-thermal"><span>Thermal IR <em>100 m</em></span></label>
+    <label class="chk"><input type="checkbox" id="lyr-temp"><span>Surface temp <em>model</em></span></label>
+    <label class="chk"><input type="checkbox" id="lyr-hazard" checked><span>No-go terrain</span></label>
+    <label class="chk"><input type="checkbox" id="lyr-route" checked><span>Route</span></label>
+  </section>
+
+  <section>
+    <h2>Space weather</h2>
+    <label class="chk"><input type="checkbox" id="sep"><span>Solar particle event</span></label>
+  </section>
+
+  <button id="fit" class="wide">Reset view</button>
+</aside>
+
+<aside class="panel right">
+
+  <div class="sol">
+    <div class="sol-head"><b id="sol-num">Sol 4995</b><span id="sol-date"></span></div>
+    <div class="sol-grid">
+      <div><small>air</small><b id="wx-air">—</b></div>
+      <div><small>ground</small><b id="wx-ground">—</b></div>
+      <div><small>pressure</small><b id="wx-press">—</b></div>
+      <div><small>sky</small><b id="wx-sky">—</b></div>
+      <div><small>uv</small><b id="wx-uv">—</b></div>
+      <div><small>daylight</small><b id="wx-day">—</b></div>
+    </div>
+    <div class="sol-src">REMS · measured at Gale</div>
+  </div>
+
+  <h2>EVA profile</h2>
+
+  <div class="big"><span id="time">—</span><small>walk time</small></div>
+
+  <div class="grid">
+    <div class="cell"><small>distance</small><b id="dist">—</b></div>
+    <div class="cell"><small>max slope</small><b id="slope">—</b></div>
+    <div class="cell"><small>ascent</small><b id="asc">—</b></div>
+    <div class="cell"><small>descent</small><b id="desc">—</b></div>
+  </div>
+
+  <div class="row"><small>temperature</small><b><span id="tmin">—</span> <span class="arrow">–</span> <span id="tmax">—</span></b></div>
+  <div class="row"><small>radiation dose</small><b id="dose">—</b></div>
+  <div class="row sub"><small id="dosepct">—</small></div>
+  <div class="row"><small>budget remaining</small><b id="budgetleft">—</b></div>
+
+  <div id="pnr" class="alert" hidden></div>
+  <div id="thermaladv" class="alert cold" hidden></div>
+  <div id="warn" class="alert bad" hidden></div>
+
+  <div class="foot"><small>solved in</small><b id="solve">—</b></div>
+</aside>
+
+<div id="tleg" class="legend" hidden>
+  <span class="lbl">surface temp</span>
+  <span class="bar"></span>
+  <span class="rng" id="tleg-rng">—</span>
+</div>
+
+<div id="thleg" class="legend lower" hidden>
+  <span class="lbl">themis IR</span>
+  <span class="bar ir"></span>
+  <span class="rng">cool → warm · 100 m/px</span>
+</div>
+
+<div id="hint" class="hint"></div>
+
+<footer class="profile-wrap">
+  <canvas id="profile"></canvas>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
