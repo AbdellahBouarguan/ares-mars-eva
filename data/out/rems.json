@@ -1,0 +1,20 @@
+{
+  "sol": 4995,
+  "terrestrial_date": "2026-08-25",
+  "ls": 341,
+  "season": "Month 12",
+  "air_temp_min_c": -71.0,
+  "air_temp_max_c": -5.0,
+  "ground_temp_min_c": -84.0,
+  "ground_temp_max_c": 4.0,
+  "pressure_pa": 777,
+  "pressure_trend": "Higher",
+  "opacity": "Sunny",
+  "uv_index": "Moderate",
+  "sunrise": "06:46",
+  "sunset": "18:51",
+  "source": "REMS, MSL/Curiosity",
+  "credit": "NASA/JPL/CAB",
+  "url": "https://mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json",
+  "note": "Published by CAB as an outreach feed. For scientific REMS data use the PDS Atmospheres node."
+}
