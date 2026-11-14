@@ -1,0 +1,52 @@
+{
+  "name": "Gale Crater - Mount Sharp NW flank",
+  "status": "Real Gale DEM (1 m) + CTX mosaic (~5 m). Waypoints are placeholders.",
+  "bbox_lonlat": [
+    137.3,
+    -4.8,
+    137.4,
+    -4.72
+  ],
+  "target_res_m": 4.0,
+  "max_px": 4096,
+  "dtm_path": "data/raw/dtm.tif",
+  "ortho_path": "data/raw/ctx.tif",
+  "out_dir": "data/out",
+  "route": {
+    "v0_mps": 1.2,
+    "slope_max_deg": 25,
+    "eva_budget_min": 360,
+    "dose_rate_mSv_day": 0.64,
+    "career_limit_mSv": 400,
+    "hab_lonlat": [
+      137.34,
+      -4.76
+    ]
+  },
+  "waypoints": [
+    {
+      "id": "S1",
+      "label": "Clay unit - biosignature target",
+      "lon": 137.33,
+      "lat": -4.78
+    },
+    {
+      "id": "S2",
+      "label": "Clay/sulfate transition bed",
+      "lon": 137.35,
+      "lat": -4.77
+    },
+    {
+      "id": "S3",
+      "label": "Sulfate bench",
+      "lon": 137.365,
+      "lat": -4.745
+    },
+    {
+      "id": "S4",
+      "label": "Return cache",
+      "lon": 137.345,
+      "lat": -4.755
+    }
+  ]
+}

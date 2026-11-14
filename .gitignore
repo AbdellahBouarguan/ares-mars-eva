@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# raw downloads stay local (5.4 GB) — see data/raw/README.md
+data/raw/*
+!data/raw/README.md
+
+# intermediate rasters
+*.npy
+data/out/*.tif
