@@ -6,6 +6,8 @@ extra-vehicular activity (EVA) on Mars.
 Existing Mars maps answer *"what is this place?"* A.R.E.S answers a narrower
 question: *"can the astronaut walk this route and get back?"*
 
+Repository: <https://github.com/AbdellahBouarguan/ares-mars-eva>
+
 Pick a start, pick a destination. The tool plans a route over a verified 1 m
 digital elevation model of Gale Crater and reports the numbers that decide the
 walk: time, consumables, radiation dose, and the point at which turning back is
@@ -38,7 +40,8 @@ Python 3.10 or newer. No npm, no bundler, no build step, and no network
 connection once the page has loaded.
 
 ```bash
-git clone <this-repo> && cd ares-mars-eva
+git clone https://github.com/AbdellahBouarguan/ares-mars-eva.git
+cd ares-mars-eva
 
 python3 -m venv .venv
 ./.venv/bin/pip install -r pipeline/requirements.txt   # only to rebuild data
@@ -142,6 +145,14 @@ The limits, stated plainly:
   the most useful validation available.
 
 The full treatment is in [`docs/methodology.md`](docs/methodology.md) §10–§12.
+
+## AI assistance
+
+This project used generative AI tools for code drafting, documentation and
+debugging. No AI-generated imagery is used anywhere, and every scientific
+claim, constant and limitation was verified against its source. The full
+statement, including which tools and what they were used for, is in
+[`docs/ai-usage.md`](docs/ai-usage.md).
 
 ## Credits
 
