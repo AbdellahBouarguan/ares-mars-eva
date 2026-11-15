@@ -377,7 +377,7 @@ any single EVA.
 The **SEP toggle adds a flat +25 mSv** as a what-if. It is not derived from any
 space-weather data and is not a forecast.
 
-Enabling it also raises a master caution telling the astronaut to seek shelter,
+Enabling it also raises a master warning strip telling the astronaut to seek shelter,
 and reports how far the route is from its start. The tool has no shelter model:
 there is no habitat geometry, and nothing in the elevation model identifies a
 shielded location. The start point is therefore treated as the shelter for the

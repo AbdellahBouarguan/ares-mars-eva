@@ -280,8 +280,8 @@ function updateSep() {
   el.hidden = false;
   const m = state.metrics;
   $("masterwarn-text").textContent = m
-    ? `SEP EVENT \u00b7 SEEK SHELTER \u00b7 RETURN ${fmtDist(m.distance_m)} \u00b7 ${fmtTime(m.time_s)}`
-    : "SEP EVENT \u00b7 SEEK SHELTER";
+    ? `SEP EVENT \u00b7 SEEK SHELTER NOW \u00b7 RETURN ${fmtDist(m.distance_m)} \u00b7 ${fmtTime(m.time_s)}`
+    : "SEP EVENT \u00b7 SEEK SHELTER NOW";
 }
 
 function updateStats() {
