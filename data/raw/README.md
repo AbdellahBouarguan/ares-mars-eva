@@ -21,7 +21,7 @@ If none does, fall back in this order: **HRSC DTM (~50 m/px)** →
 
 Current placeholder in `pipeline/config.json`:
 
-    bbox_lonlat: [137.30, -4.80, 137.40, -4.72]   # west, south, east, north
+    bbox_lonlat: [137.322, -4.80, 137.422, -4.72]   # west, south, east, north
 
 Verify and replace it with your real box. The center should be a named
 Curiosity target on the clay → sulfate transition, read off the traverse.

@@ -29,7 +29,7 @@ labelled as such wherever they appear.
 | Item | Value |
 |---|---|
 | Site | Gale Crater, northwest flank of Mount Sharp |
-| Working box | `137.30 – 137.40 E`, `−4.80 – −4.72 N` |
+| Working box | `137.322 – 137.422 E`, `−4.80 – −4.72 N` |
 | Box size | 5.93 × 4.74 km (28 km²) |
 | Canonical grid | 1482 × 1185 px at 4 m/px = 1,756,170 cells |
 
@@ -103,7 +103,7 @@ Retrieved by WMS GetMap against
 
 ```
 layers=THEMIS  styles=  srs=EPSG:4326
-bbox=137.30,-4.80,137.40,-4.72
+bbox=137.322,-4.80,137.422,-4.72
 width=59  height=47  format=image/png
 ```
 
@@ -443,15 +443,30 @@ Every value on screen, why it is there, and how far it should be trusted.
 3. **Black edge column.** The warp left the last destination column unpainted;
    fixed by padding the source window 2 px.
 
+**Found in mentor review**
+
+4. **Duplicated block in the western fifth of the CTX mosaic.** During a review
+   of the rendering, a mentor noticed that the leftmost fifth of the map
+   repeated the terrain beside it. The cause was in the source mosaic, not in
+   the pipeline. Patch correlation matched the western kilometre against the
+   strip one kilometre east at an offset of +250 px and −8 px, with r up to
+   0.89. The elevation model differed from the same area by 90 m RMS, so the
+   terrain was sound and only the imagery was misplaced.
+
+   Fixed by moving the working box 1.3 km east, to `137.322 – 137.422 E`, which
+   places it clear of the defect. Regression check on the shipped basemap: the
+   worst self-match fell from 0.909 with two patches in the duplicate band to
+   0.766 with none.
+
 **Still true, and disclosed**
 
-4. **A\* ignores budget, radiation and temperature.** It optimises terrain cost
+5. **A\* ignores budget, radiation and temperature.** It optimises terrain cost
    only. The other constraints are reported, never enforced.
-5. **PNR assumes retreat along the same path.** An astronaut would likely choose a
+6. **PNR assumes retreat along the same path.** An astronaut would likely choose a
    different, possibly longer, escape.
-6. **`wasted_s` and `max_grade_deg`** are computed and returned but never
+7. **`wasted_s` and `max_grade_deg`** are computed and returned but never
    displayed. Harmless, currently unused.
-7. **Two config constants were removed.** `sand_mult` and `boulder_mult` were
+8. **Two config constants were removed.** `sand_mult` and `boulder_mult` were
    declared but referenced by nothing; terrain penalties live in the cost raster.
 
 ---

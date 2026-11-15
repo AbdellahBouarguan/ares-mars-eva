@@ -46,7 +46,8 @@ budget and REMS sets the conditions for the sol.
 - Derived slope, roughness and hillshade, then quantised a cost raster to 8 bits
   with 255 marking anything above 25°.
 - Flat-fielded and percentile-stretched the CTX mosaic, and blended DEM relief
-  into it.
+  into it. The mosaic's western block carries a duplicated strip, so the
+  working box was moved east to avoid it; see `methodology.md` §10.
 - Fetched the THEMIS mosaic at its native 59 × 47 px for the box, resampled it,
   and colourised it.
 - Cached a single REMS sol, including the measured ground temperature.
