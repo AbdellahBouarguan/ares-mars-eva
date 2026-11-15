@@ -15,6 +15,8 @@ no longer possible.
 
 ![Gale Crater terrain, 5.93 × 4.74 km working box](data/out/basemap.png)
 
+**Demo video (29 s):** [`demo_video.mp4`](demo_video.mp4)
+
 ## 2026 NASA Space Apps Challenge
 
 This project was built for the 2026 NASA Space Apps Challenge, in response to
