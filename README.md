@@ -145,8 +145,7 @@ The limits, stated plainly:
 - **The temperature layer is modelled.** It captures spatial variation only and
   has no diurnal term. REMS measures an 88 °C swing at the same site.
 - **No spectral, geophysical or chemical data** is included.
-- **Nothing has been checked against Curiosity's actual traverse.** That remains
-  the most useful validation available.
+
 
 The full treatment is in [`docs/methodology.md`](docs/methodology.md) §10–§12.
 
