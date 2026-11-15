@@ -1,17 +1,14 @@
 # Data provenance and write-up
 
-A public record of what A.R.E.S uses, what was done to it, and what it cannot
-tell you. Built for the **2026 NASA Space Apps Challenge**.
-
----
+What A.R.E.S uses, what we did to it, and what it cannot tell you. Built for the
+2026 NASA Space Apps Challenge.
 
 ## What it does
 
-A.R.E.S — Advanced Regolith & Environmental Survivor — plans a walking route
-between two points on the Martian surface and reports whether two suited
-astronauts could complete it and return.
+A.R.E.S plans a walking route between two points on the Martian surface and
+reports whether a suited astronaut could complete it and return.
 
-It layers five kinds of NASA data over one another:
+Five kinds of NASA data feed the planner:
 
 | Type | Layer | Resolution | Class |
 |---|---|---|---|
@@ -21,10 +18,8 @@ It layers five kinds of NASA data over one another:
 | Atmospheric | MSL REMS, Sol 4995 | point | measured |
 | Radiation | MSL RAD background rate | point | measured |
 
-Plus one derived layer — **modelled surface temperature** — which is not data
-and is labelled as such everywhere it appears.
-
----
+Modelled surface temperature is layered on top of these. It is not data, and the
+interface says so wherever it appears.
 
 ## Data table
 
@@ -40,62 +35,56 @@ and is labelled as such everywhere it appears.
 
 ### Which dataset, and why that one
 
-The **DEM drives the method** — route cost is literally a function of elevation.
-Nothing else in the stack is decorative: CTX is what the crew looks at, THEMIS
-is regional thermal context, RAD sets the dose budget, REMS sets the sol
-conditions.
+Route cost is a direct function of elevation, so the DEM carries the method. The
+rest of the stack answers narrower questions. CTX shows the astronaut what the
+ground looks like. THEMIS supplies regional thermal context. RAD sets the dose
+budget and REMS sets the conditions for the sol.
 
 ### What we did to it
 
 - Reprojected the DEM and CTX onto one Mars equirectangular grid at 4 m/px.
-- Derived slope, roughness and hillshade; quantised a cost raster to 8 bits
-  (255 = impassable above 25°).
-- Flat-fielded and percentile-stretched the CTX mosaic, then blended DEM relief
+- Derived slope, roughness and hillshade, then quantised a cost raster to 8 bits
+  with 255 marking anything above 25°.
+- Flat-fielded and percentile-stretched the CTX mosaic, and blended DEM relief
   into it.
-- Fetched the THEMIS mosaic at native 59 × 47 px for the box, resampled and
-  colourised it.
-- Cached one real REMS sol, including its measured ground temperature.
+- Fetched the THEMIS mosaic at its native 59 × 47 px for the box, resampled it,
+  and colourised it.
+- Cached a single REMS sol, including the measured ground temperature.
 
 ### What it cannot tell you
 
-- Rock hardness, bearing strength, or suit-scale trafficability.
-- Anything below 4 m — the grid resolution floor.
-- Absolute surface temperature. The model captures spatial variation only
-  (~17 °C across the box) and has no diurnal term, while REMS measures an
-  88 °C diurnal swing at the same site.
-- Whether the route is safe. It reports constraints; it does not certify them.
+- Rock hardness, bearing strength, or how a suit actually moves over a surface.
+- Anything smaller than 4 m, which is the grid resolution.
+- Absolute surface temperature. The model captures spatial variation, about
+  17 °C across the box, and contains no diurnal term. REMS measures an 88 °C
+  swing at the same site.
+- Whether a route is safe. The tool reports constraints. It does not certify
+  them.
 
----
+## Data we did not use
 
-## Data we did **not** use
-
-Listed deliberately, because naming what is absent is part of the claim:
-
-- **MSL DAN** (subsurface hydrogen) — line-of-traverse only, no spatial coverage
-  of the working box.
-- **CheMin / APXS / ChemCam** — point chemistry at named targets, not yet tied
-  to waypoints.
-- **Curiosity traverse** — the validation overlay we most want; not yet done.
-- **HiRISE RED** — would give 25–50 cm optical imagery; the pipeline already
+- MSL DAN. Subsurface hydrogen measured along the traverse, with no spatial
+  coverage of the working box.
+- CheMin, APXS, ChemCam. Point chemistry at named targets, not yet tied to
+  waypoints.
+- Curiosity traverse. Still the validation overlay we want most.
+- HiRISE RED. It would give 25–50 cm optical imagery, and the pipeline already
   accepts it as `data/raw/ortho.tif`.
-- **CRISM** — spectral mineralogy; sparse swaths, would require digitising
+- CRISM. Spectral mineralogy in sparse swaths; using it would mean digitising
   published detections.
-- **Comms line-of-sight** — an implementation exists but returns a degenerate
-  all-shadowed mask at 8 m sampling with a low observer. Excluded rather than
-  shipped wrong.
-
----
+- Comms line of sight. An implementation exists, but it returns an all-shadowed
+  mask at 8 m sampling with a low observer, so we left it out.
 
 ## References
 
-- Gale Crater DEM — NASA/JPL Mars Trek
-- CTX mosaic — NASA/JPL-Caltech/MSSS, via Mars Trek
-- THEMIS IR Day 100m Global Mosaic v12 — NASA/JPL/Arizona State University,
-  via USGS Astrogeology
-- MSL RAD — NASA/JPL/SwRI
-- MSL REMS — NASA/JPL/Centro de Astrobiología (published as an outreach feed)
-- J. A. Hoffman, *EVA: Walking and Working in Space* — background reading on
-  extra-vehicular activity; not redistributed
-- Software: rasterio, pyproj, numpy, scipy, Pillow; A\* implemented from first
-  principles
-- No NASA, JPL or mission logos are used anywhere in the product or the demo
+- Gale Crater DEM. NASA/JPL Mars Trek.
+- CTX mosaic. NASA/JPL-Caltech/MSSS, via Mars Trek.
+- THEMIS IR Day 100m Global Mosaic v12. NASA/JPL/Arizona State University, via
+  USGS Astrogeology.
+- MSL RAD. NASA/JPL/SwRI.
+- MSL REMS. NASA/JPL/Centro de Astrobiología, published as an outreach feed.
+- J. A. Hoffman, *EVA: Walking and Working in Space*. Background reading on
+  extra-vehicular activity; not redistributed.
+- Software: rasterio, pyproj, numpy, scipy, Pillow. The A\* implementation is
+  written from first principles.
+- No NASA, JPL or mission logos are used anywhere in the product or the demo.

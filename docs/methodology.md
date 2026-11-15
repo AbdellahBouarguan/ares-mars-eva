@@ -4,16 +4,13 @@
 > Challenge: a layered, integrated view of a location or route on the Martian
 > surface that helps a human explorer plan and carry out a Marswalk.
 >
-> This document is the authoritative description of what A.R.E.S computes, why
-> each displayed value exists, and where every number comes from. If something
-> here disagrees with the code, the code is wrong.
 
 ---
 
 ## 1. Purpose and claims
 
-Given a terrain box on Mars and two points in it, A.R.E.S estimates whether two
-suited astronauts can walk between them and return within an EVA budget,
+Given a terrain box on Mars and two points in it, A.R.E.S estimates whether a
+suited astronaut can walk between them and return within an EVA budget,
 reporting terrain, thermal and radiation context along the way.
 
 **It claims** that its terrain metrics (distance, slope, ascent, elevation) are
@@ -41,10 +38,10 @@ labelled as such wherever they appear.
 Radiation (RAD), weather (REMS), subsurface hydrogen (DAN) and chemistry
 (CheMin/APXS/ChemCam) have all been measured *at Gale* by instruments on the
 ground. No other site on Mars offers that combination, so the safety-relevant
-inputs are observations rather than extrapolations. The challenge brief also
+inputs are observations rather than extrapolations. The 2026 NASA Space Apps Challenge brief also
 names Gale's boxwork formations as its worked example.
 
-### Extents — imagery covers more than terrain
+### Extents: imagery covers more than terrain
 
 | Layer | Extent | Area | vs. Gale |
 |---|---|---|---|
@@ -54,7 +51,7 @@ names Gale's boxwork formations as its worked example.
 
 Gale is ~154 km across (~18,600 km²). Bradbury Landing lies inside the DEM; the
 crater centre and Mount Sharp's summit do not. The DEM is therefore the binding
-constraint — the imagery extends further, but without elevation there is no
+constraint. The imagery extends further, but without elevation there is no
 slope, no cost and no route.
 
 ---
@@ -84,16 +81,16 @@ Verification performed before anything downstream trusted it:
 
 1. **Scale.** `1 / 1.68706e-5° = 59,274.4 m/degree`, and
    `2πR / 360 = 59,274.4` at `R = 3,396,190 m`. The product is genuinely 1 m/px
-   on a planetocentric spherical frame — the same sphere the pipeline targets.
+   on a planetocentric spherical frame, the same sphere the pipeline targets.
 2. **Coverage.** 0.000% nodata across the full product.
-3. **Seams.** Maximum row-mean and column-mean jump 0.2 m — no mosaic seams.
+3. **Seams.** Maximum row-mean and column-mean jump 0.2 m, so there are no mosaic seams.
 4. **Sanity.** Bradbury Landing (4.5895°S, 137.4417°E) falls inside; the crater
    centre does not, which matches the product's documented extent.
 
 ### CTX
 
 48,096 × 44,640 px, uint8, `~5 m/px`, `ESRI:104971`, bounds
-`135.1843 – 139.2413 E`, `−6.5733 – −2.8078 N`. Panchromatic — no colour.
+`135.1843 – 139.2413 E`, `−6.5733 – −2.8078 N`. Panchromatic, so there is no colour.
 Feather blends between orbits remain visible as faint vertical boundaries; this
 is a property of the source mosaic and is measured at under 1 digital number in
 the column means, so it cannot be removed by brightness correction without
@@ -111,7 +108,7 @@ width=59  height=47  format=image/png
 ```
 
 59 × 47 px is the native sampling of a 5.93 × 4.74 km box at 100 m/px. The
-service returns a **rendered** image, not radiance in Kelvin, which is why the
+service returns a **rendered** image rather than radiance in Kelvin. That is why the
 layer is treated as qualitative.
 
 ### REMS
@@ -119,7 +116,7 @@ layer is treated as qualitative.
 `mars.nasa.gov/rss/api/?feed=weather&category=msl&feedtype=json`, sol 4995
 (terrestrial 2026-08-25, Ls 341). Eight fields stored in `data/out/rems.json`.
 CAB publishes it as an outreach product; scientific REMS data lives at the PDS
-Atmospheres node. Measurements are influenced by the rover itself — position,
+Atmospheres node. Measurements are influenced by the rover itself: position,
 orientation, shade, dust on the sensors.
 
 ---
@@ -131,7 +128,7 @@ Run order matters: `03_cost.py` rewrites `meta.json` from scratch, so
 
 | Step | Input | Operation | Output |
 |---|---|---|---|
-| `00_check.py` | raw rasters | print CRS, bounds, size, dtype, nodata | — |
+| `00_check.py` | raw rasters | print CRS, bounds, size, dtype, nodata | n/a |
 | `01_grid.py` | DEM, CTX | windowed read, reproject | `dtm.tif`, `ortho.tif` |
 | `02_derivatives.py` | `dtm.tif` | slope, roughness, hillshade | `*.npy` |
 | `03_cost.py` | slope, roughness | cost raster, hazard | `cost.png`, `hazard.png`, `meta.json` |
@@ -139,8 +136,8 @@ Run order matters: `03_cost.py` rewrites `meta.json` from scratch, so
 | `05_export_layers.py` | `dtm.tif`, `*.npy` | elevation, slope, roughness, temperature | `elev16.bin`, `slope8.png`, `rough8.png`, `temp8.png` |
 | `07_rems.py` | REMS API | fetch one sol | `rems.json` |
 | `08_themis.py` | USGS WMS | fetch, resample, colourise | `themis.png` |
-| `06_viewshed.py` | — | **experimental, not shipped** | — |
-| `99_stub.py` | — | synthetic terrain for frontend work | stub products |
+| `06_viewshed.py` | n/a | **experimental, not shipped** | n/a |
+| `99_stub.py` | n/a | synthetic terrain for frontend work | stub products |
 
 ### 4.1 Canonical grid (`01_grid.py`)
 
@@ -284,7 +281,7 @@ that touch only at a corner.
 Follow `came` from the goal back to the start, reverse. A guard of `N`
 iterations protects against a malformed parent chain.
 
-### 5.5 What A\* optimises — and what it does not
+### 5.5 What A\* optimises, and what it does not
 
 A\* minimises **cost**, not time. Time, dose, temperature and the point of no
 return are computed in a second pass over the finished path. The algorithm also
@@ -313,7 +310,7 @@ slope and terrain curves, the honest error bar on a 32-minute estimate is
 roughly ±50%.
 
 **Terrain penalty uses roughness only.** An earlier build derived `fTerrain`
-from the cost raster, which already embeds slope — counting slope twice and
+from the cost raster, which already embeds slope, counting slope twice and
 inflating walk time by about 14% (37 → 32 min for the reference route). The fix
 was to export `rough8.png` and use it directly.
 
@@ -323,7 +320,7 @@ The 0.15 m/s floor prevents a division blow-up on pathological cells.
 
 ## 7. Environmental models
 
-### 7.1 Surface temperature — modelled
+### 7.1 Surface temperature, modelled
 
 ```
 ci = sin(alt)·cos(slope) + cos(alt)·sin(slope)·cos(az − aspect)
@@ -336,7 +333,7 @@ Distribution: p10 **−57.4 °C**, p50 **−54.7 °C**, p90 **−53.0 °C**.
 
 **Limits.** One fixed sun angle (az 315°, alt 45°). Surface, not air. No diurnal
 cycle, no seasons, terrestrial-style lapse rate. The model captures **spatial**
-variation — about 17 °C across the box — and **no temporal** variation, while
+variation (about 17 °C across the box) and **no temporal** variation, while
 REMS measures an **88 °C diurnal swing** at the same site. The layer is a
 relative indicator of which ground is warmer, never an absolute temperature.
 
@@ -349,13 +346,13 @@ dose = 0.64 mSv/day × (route duration in hours / 24)
 `0.64 mSv/day` is the galactic cosmic ray background measured by RAD at Gale.
 The career reference of **400 mSv is a conservative planning figure, not an
 official NASA limit** (NASA's current limit is risk-based, around 600 mSv for
-younger crew). Per-walk dose is small — 0.014 mSv for 32 minutes — which is
+younger astronauts). Per-walk dose is small: 0.014 mSv over 32 minutes. That is
 precisely why the cumulative framing matters more than any single EVA.
 
 The **SEP toggle adds a flat +25 mSv** as a what-if. It is not derived from any
 space-weather data and is not a forecast.
 
-### 7.3 Thermal advisory — relative by construction
+### 7.3 Thermal advisory, relative by construction
 
 The box temperature distribution is computed once; its **10th percentile**
 (−57.4 °C) is the threshold. Any route sample colder than that is flagged, and
@@ -375,7 +372,7 @@ Every value on screen, why it is there, and how far it should be trusted.
 | # | Metric | Question it answers | Derivation | Class | Confidence |
 |---|---|---|---|---|---|
 | 1 | Sol / date | When are we operating? | REMS record sol 4995 | measured | exact |
-| 2 | Air temp range | What will the crew breathe and feel? | REMS `min_temp`/`max_temp` | measured | exact as published |
+| 2 | Air temp range | What will the astronaut breathe and feel? | REMS `min_temp`/`max_temp` | measured | exact as published |
 | 3 | Ground temp range | How cold is the surface underfoot? | REMS `min_gts_temp`/`max_gts_temp` | measured | exact as published |
 | 4 | Pressure | Suit pressure budget context | REMS `pressure` | measured | exact |
 | 5 | Sky / opacity | Dust conditions for the EVA | REMS `atmo_opacity` | measured | categorical |
@@ -398,7 +395,7 @@ Every value on screen, why it is there, and how far it should be trusted.
 ### Why these and not others
 
 - **Distance, slope, ascent, elevation** are shown because they are the only
-  numbers here that are *exact* and they are the ones a crew can act on
+  numbers here that are *exact* and they are the ones an astronaut can act on
   without trusting a model.
 - **Walk time** is shown because it is the decision variable, and it is labelled
   as a model estimate because it is the weakest number on screen.
@@ -408,8 +405,8 @@ Every value on screen, why it is there, and how far it should be trusted.
   a per-walk figure of 0.014 mSv invites the wrong conclusion.
 - **Thermal advisory** is relative because an absolute threshold would be
   invented.
-- **Solve time** was displayed in an earlier build and removed — it is a
-  developer metric with no meaning to a crew.
+- **Solve time** was displayed in an earlier build and removed. It is a
+  developer metric with no meaning to an astronaut.
 
 ---
 
@@ -450,11 +447,11 @@ Every value on screen, why it is there, and how far it should be trusted.
 
 4. **A\* ignores budget, radiation and temperature.** It optimises terrain cost
    only. The other constraints are reported, never enforced.
-5. **PNR assumes retreat along the same path.** A crew would likely choose a
+5. **PNR assumes retreat along the same path.** An astronaut would likely choose a
    different, possibly longer, escape.
 6. **`wasted_s` and `max_grade_deg`** are computed and returned but never
    displayed. Harmless, currently unused.
-7. **Two config constants were removed** — `sand_mult` and `boulder_mult` were
+7. **Two config constants were removed.** `sand_mult` and `boulder_mult` were
    declared but referenced by nothing; terrain penalties live in the cost raster.
 
 ---
@@ -492,12 +489,12 @@ the threshold; only the amount of terrain considered walkable changes materially
 ## 12. Limitations and omissions
 
 - **No spectral, geophysical or chemical data.** No CRISM, DAN, CheMin or APXS.
-  Three of the eight data types the challenge suggests are absent.
+  Three of the eight data types the 2026 NASA Space Apps Challenge suggests are absent.
 - **No traverse validation.** Overlaying Curiosity's actual driven path is the
   strongest remaining check and has not been done.
 - **No comms layer.** A viewshed implementation exists but produced a degenerate
   all-shadowed mask at 8 m sampling with a low observer. Excluded rather than
-  shipped wrong.
+  shipped wrong; we left it out.
 - **4 m grid resolution floor.** Anything smaller than a cell is invisible.
 - **Synthetic illumination.** Basemap shadows are the DEM hillshade, not the
   photograph's lighting.
@@ -529,11 +526,11 @@ app: every raster shares its grid, so a pixel coordinate is the same everywhere.
 
 ## 14. References
 
-- Gale crater DEM — NASA/JPL **Mars Trek**
-- CTX mosaic — NASA/JPL-Caltech/MSSS, via **Mars Trek**
-- THEMIS IR Day 100m Global Mosaic v12 — NASA/JPL/Arizona State University, via USGS Astrogeology
-- MSL RAD — NASA/JPL/SwRI
-- MSL REMS — NASA/JPL/Centro de Astrobiología (outreach feed)
-- Hoffman, J. A., *EVA: Walking and Working in Space* — consulted for EVA consumables, thermal control and mobility limits. Not redistributed.
+- Gale crater DEM. NASA/JPL **Mars Trek**.
+- CTX mosaic. NASA/JPL-Caltech/MSSS, via **Mars Trek**.
+- THEMIS IR Day 100m Global Mosaic v12. NASA/JPL/Arizona State University, via USGS Astrogeology.
+- MSL RAD. NASA/JPL/SwRI.
+- MSL REMS. NASA/JPL/Centro de Astrobiología, published as an outreach feed.
+- Hoffman, J. A., *EVA: Walking and Working in Space*. Consulted for EVA consumables, thermal control and mobility limits. Not redistributed.
 - Software: rasterio, pyproj, numpy, scipy, Pillow; A\* implemented from first principles, no routing library
 - No NASA, JPL or mission logos are used anywhere in the product
