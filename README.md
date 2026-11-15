@@ -86,7 +86,7 @@ terrain is enough to bring the interface up:
 | Fine-tune either point | drag the A or B marker |
 | Change the EVA budget | drag the budget slider and watch the PNR marker move |
 | Toggle layers | Terrain, THEMIS IR, surface temperature, steep terrain, route |
-| Simulate a solar particle event | `SEP EVENT (sim)` |
+| Simulate a solar particle event | `SEP EVENT (sim)` adds 25 mSv and raises a shelter advisory across the top of the screen |
 
 The scroll wheel zooms and the map background pans. `RESET VIEW` returns to the
 full box.
@@ -98,7 +98,7 @@ full box.
 | Distance, max slope, ascent, descent, elevation profile | **derived geometry** over the DEM |
 | Cursor latitude, longitude, elevation | derived |
 | Sol, air temperature, ground temperature, pressure, sky, UV, daylight | **measured** (REMS) |
-| Walk time, surface temperature, radiation dose, point of no return, thermal advisory | **model estimates** |
+| Walk time, surface temperature, radiation dose, budget left, point of no return, thermal advisory | **model estimates** |
 
 [`docs/methodology.md`](docs/methodology.md) §8 gives the formula, inputs and
 error bar for each one.

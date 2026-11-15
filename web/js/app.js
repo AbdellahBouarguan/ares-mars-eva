@@ -269,8 +269,24 @@ function route() {
 
 // ---------------------------------------------------------------- stats
 
+function updateSep() {
+  const on = $("sep").checked;
+  document.body.classList.toggle("sep-on", on);
+  const el = $("masterwarn");
+  if (!on) {
+    el.hidden = true;
+    return;
+  }
+  el.hidden = false;
+  const m = state.metrics;
+  $("masterwarn-text").textContent = m
+    ? `SEP EVENT \u00b7 SEEK SHELTER \u00b7 RETURN ${fmtDist(m.distance_m)} \u00b7 ${fmtTime(m.time_s)}`
+    : "SEP EVENT \u00b7 SEEK SHELTER";
+}
+
 function updateStats() {
   const m = state.metrics;
+  updateSep();
   if (!m) {
     for (const id of ["time", "dist", "asc", "desc", "tmin", "tmax", "dose", "dosepct", "slope", "budgetleft"]) {
       $(id).textContent = "—";

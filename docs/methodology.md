@@ -306,15 +306,39 @@ dt       = d / v
 
 `v0 = 1.2 m/s` is a **suited analogue-mobility figure from Earth**. No human has
 walked on Mars. A ±20% error on `v0` produces ±17% on time; combined with the
-slope and terrain curves, the honest error bar on a 32-minute estimate is
+slope and terrain curves, the honest error bar on an estimate of this length is
 roughly ±50%.
 
 **Terrain penalty uses roughness only.** An earlier build derived `fTerrain`
 from the cost raster, which already embeds slope, counting slope twice and
-inflating walk time by about 14% (37 → 32 min for the reference route). The fix
-was to export `rough8.png` and use it directly.
+inflating walk time by about 14% on the reference route measured at the time.
+The fix was to export `rough8.png` and use it directly.
 
 The 0.15 m/s floor prevents a division blow-up on pathological cells.
+
+### 6.1 EVA budget, budget left, and the point of no return
+
+Three quantities share one budget, and they must not disagree:
+
+```
+budget        the slider value. Default 360 min, adjustable 60 to 480.
+              This is the total time granted to the whole walk.
+
+round trip    2 × walk time, because the return follows the same path.
+
+budget left   budget − (2 × walk time)
+              Time remaining once the walk out AND the return are paid for.
+
+PNR           the farthest point where 2 × elapsed ≤ budget
+              The point at which budget left reaches zero.
+```
+
+`budget left` and the point of no return are the same constraint seen two ways,
+so they reach zero at the same instant. When the PNR marker appears, the readout
+turns red, because there is no longer enough time to get back from that point.
+
+The budget does not model time spent stationary at a sampling stop. An EVA with
+four sample stops would consume more than this figure suggests.
 
 ---
 
@@ -346,11 +370,18 @@ dose = 0.64 mSv/day × (route duration in hours / 24)
 `0.64 mSv/day` is the galactic cosmic ray background measured by RAD at Gale.
 The career reference of **400 mSv is a conservative planning figure, not an
 official NASA limit** (NASA's current limit is risk-based, around 600 mSv for
-younger astronauts). Per-walk dose is small: 0.014 mSv over 32 minutes. That is
-precisely why the cumulative framing matters more than any single EVA.
+younger astronauts). Per-walk dose is small, tens of microsieverts for a walk of
+roughly an hour. That is precisely why the cumulative framing matters more than
+any single EVA.
 
 The **SEP toggle adds a flat +25 mSv** as a what-if. It is not derived from any
 space-weather data and is not a forecast.
+
+Enabling it also raises a master caution telling the astronaut to seek shelter,
+and reports how far the route is from its start. The tool has no shelter model:
+there is no habitat geometry, and nothing in the elevation model identifies a
+shielded location. The start point is therefore treated as the shelter for the
+purpose of that message, and the crew has to judge whether that is realistic.
 
 ### 7.3 Thermal advisory, relative by construction
 
@@ -386,8 +417,8 @@ Every value on screen, why it is there, and how far it should be trusted.
 | 13 | Modelled surface temp | Warmer or colder ground? | §7.1 | **modelled** | relative only |
 | 14 | Radiation dose | What does this walk cost in dose? | §7.2 | measured × modelled | ±50% |
 | 15 | Dose % of reference | Is that a lot? | dose / 400 mSv | arithmetic | ±50% |
-| 16 | Budget left | Can we still return? | budget − elapsed | arithmetic | inherits ±50% |
-| 17 | PNR | Where must we turn around? | first index where 2·elapsed > budget | **modelled** | ±50% |
+| 16 | Budget left | Can we still return? | budget − 2 × walk time | arithmetic | inherits ±50% |
+| 17 | PNR | Where must we turn around? | first index where 2 × elapsed > budget | **modelled** | ±50% |
 | 18 | Thermal advisory | Is any ground unusually cold? | §7.3 | **modelled** | relative only |
 | 19 | Cursor lat/lon/elev | Where is this exactly? | grid geotransform | derived | ±1 m |
 | 20 | Elevation profile | What is the shape of the walk? | `elev16` along path | derived | ±1–2 m |
@@ -443,7 +474,7 @@ Every value on screen, why it is there, and how far it should be trusted.
 3. **Black edge column.** The warp left the last destination column unpainted;
    fixed by padding the source window 2 px.
 
-**Found in mentor review**
+**Found in review**
 
 4. **Duplicated block in the western fifth of the CTX mosaic.** During a review
    of the rendering, a mentor noticed that the leftmost fifth of the map
@@ -458,15 +489,27 @@ Every value on screen, why it is there, and how far it should be trusted.
    worst self-match fell from 0.909 with two patches in the duplicate band to
    0.766 with none.
 
+5. **Budget left paid for the outbound leg only.** The panel reported
+   `budget − walk time` while the point of no return used `2 × walk time`, so
+   two readouts derived from one budget used different definitions of it. On the
+   default route at the time of the fix, a 360 min budget and a 55 min walk
+   produced "305 min left", when a walk that has to come back leaves 250.
+   `over_budget` carried the same defect and was never displayed, so nothing
+   caught it.
+
+   Fixed by defining the budget as covering the round trip, which is what the
+   model already assumed. Calculation, PNR marker and colour threshold now agree,
+   and §6.1 states the definition so the next change cannot drift from it.
+
 **Still true, and disclosed**
 
-5. **A\* ignores budget, radiation and temperature.** It optimises terrain cost
+6. **A\* ignores budget, radiation and temperature.** It optimises terrain cost
    only. The other constraints are reported, never enforced.
-6. **PNR assumes retreat along the same path.** An astronaut would likely choose a
+7. **PNR assumes retreat along the same path.** An astronaut would likely choose a
    different, possibly longer, escape.
-7. **`wasted_s` and `max_grade_deg`** are computed and returned but never
+8. **`wasted_s` and `max_grade_deg`** are computed and returned but never
    displayed. Harmless, currently unused.
-8. **Two config constants were removed.** `sand_mult` and `boulder_mult` were
+9. **Two config constants were removed.** `sand_mult` and `boulder_mult` were
    declared but referenced by nothing; terrain penalties live in the cost raster.
 
 ---

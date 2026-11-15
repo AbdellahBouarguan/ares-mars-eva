@@ -82,7 +82,9 @@ budget and REMS sets the conditions for the sol.
 - CTX mosaic. NASA/JPL-Caltech/MSSS, via Mars Trek.
 - THEMIS IR Day 100m Global Mosaic v12. NASA/JPL/Arizona State University, via
   USGS Astrogeology.
-- MSL RAD. NASA/JPL/SwRI.
+- MSL RAD. NASA/JPL/SwRI. The +25 mSv solar particle event toggle is a
+  what-if, not a measurement, and it raises a shelter advisory rather than a
+  forecast.
 - MSL REMS. NASA/JPL/Centro de Astrobiología, published as an outreach feed.
 - J. A. Hoffman, *EVA: Walking and Working in Space*. Background reading on
   extra-vehicular activity; not redistributed.

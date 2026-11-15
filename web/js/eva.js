@@ -96,9 +96,11 @@ export function evaluate(path, ctx) {
     cold_fraction: samples.length ? coldCount / samples.length : 0,
     pnr_index: pnrIdx,
     pnr_distance_m: pnrIdx < path.length ? samples[pnrIdx].d : null,
-    over_budget: time > budgetS,
+    over_budget: 2 * time > budgetS,
     budget_min: budgetMin,
-    remaining_min: budgetMin - time / 60,
+    // the budget covers the walk out AND the return, which is what the PNR
+    // computation already assumes (2 * cum[n] > budgetS)
+    remaining_min: budgetMin - (2 * time) / 60,
     wasted_s: wasted,
     samples,
   };
