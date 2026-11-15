@@ -21,7 +21,7 @@ This project was built for the 2026 NASA Space Apps Challenge, in response to
 its brief on producing a layered, integrated view of a location or route on the
 Martian surface that helps a human explorer plan and carry out a Marswalk.
 
-Every dataset is NASA or NASA-derived, reached through the resources the 2026
+Every dataset is NASA or NASA-derived, reached through the resources the
 2026 NASA Space Apps Challenge recommends:
 
 | Data | Source |
