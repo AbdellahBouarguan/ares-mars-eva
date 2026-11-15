@@ -70,7 +70,7 @@ function lonLatToWorld(lon, lat) {
 function fmtTime(sec) {
   const h = Math.floor(sec / 3600);
   const m = Math.round((sec % 3600) / 60);
-  return h > 0 ? `${h}h ${String(m).padStart(2, "0")}m` : `${m}m`;
+  return h > 0 ? `${h}H ${String(m).padStart(2, "0")}M` : `${m} MIN`;
 }
 
 function fmtDist(m) {
@@ -84,12 +84,13 @@ async function boot() {
   const meta = state.meta;
   [state.W, state.H] = meta.grid_px;
 
-  const [basemap, costImg, hazard, tempImg, slopeImg, themisImg, rems] = await Promise.all([
+  const [basemap, costImg, hazard, tempImg, slopeImg, roughImg, themisImg, rems] = await Promise.all([
     loadImage(DATA + meta.images.basemap),
     loadImage(DATA + meta.images.cost),
     loadImage(DATA + meta.images.hazard),
     loadImage(DATA + "temp8.png"),
     loadImage(DATA + "slope8.png"),
+    loadImage(DATA + "rough8.png"),
     safeImage(DATA + "themis.png"),
     fetch(DATA + "rems.json").then((r) => (r.ok ? r.json() : null)).catch(() => null),
   ]);
@@ -97,9 +98,9 @@ async function boot() {
   state.imgs.themis = themisImg;
   state.rems = rems;
   if (rems) {
-    $("sol").textContent = `Sol ${rems.sol}`;
-    $("sol-num").textContent = `Sol ${rems.sol}`;
-    $("sol-date").textContent = rems.terrestrial_date || "";
+    $("sol").textContent = `SOL ${rems.sol}`;
+    $("sol-num").textContent = `SOL ${rems.sol}`;
+    $("sol-date").textContent = `${rems.terrestrial_date || ""} · LATEST`;
     const f = (v, d = 0) => (v === null || v === undefined ? "—" : Number(v).toFixed(d));
     $("wx-air").textContent = `${f(rems.air_temp_min_c)}…${f(rems.air_temp_max_c)} °C`;
     $("wx-ground").textContent = `${f(rems.ground_temp_min_c)}…${f(rems.ground_temp_max_c)} °C`;
@@ -132,6 +133,12 @@ async function boot() {
   const sd = cc.getImageData(0, 0, state.W, state.H).data;
   state.slope8 = new Uint8Array(state.W * state.H);
   for (let i = 0, j = 0; i < state.slope8.length; i++, j += 4) state.slope8[i] = sd[j];
+
+  // roughness grid -> Uint8Array (0..255 normalised to p98)
+  cc.drawImage(roughImg, 0, 0);
+  const rd = cc.getImageData(0, 0, state.W, state.H).data;
+  state.rough8 = new Uint8Array(state.W * state.H);
+  for (let i = 0, j = 0; i < state.rough8.length; i++, j += 4) state.rough8[i] = rd[j];
 
   const tc = document.createElement("canvas");
   tc.width = state.W; tc.height = state.H;
@@ -212,7 +219,7 @@ function route() {
   if (ax === undefined || bx === undefined) {
     state.path = null;
     state.metrics = null;
-    $("warn").textContent = "Endpoints cannot be placed on walkable ground.";
+    $("warn").textContent = "NO VALID ENDPOINT";
     $("warn").hidden = false;
     updateStats();
     return;
@@ -228,7 +235,7 @@ function route() {
   if (!path) {
     state.path = null;
     state.metrics = null;
-    $("warn").textContent = "No walkable route between A and B. Terrain blocks the path.";
+    $("warn").textContent = "NO ROUTE — TERRAIN BLOCKS";
     $("warn").hidden = false;
     updateStats();
     draw();
@@ -243,6 +250,7 @@ function route() {
     cost: state.cost,
     temp8: state.temp8,
     slope8: state.slope8,
+    rough8: state.rough8,
     tempMin: state.meta.temperature.min_c,
     tempMax: state.meta.temperature.max_c,
     p10: state.meta.temperature.p10_c,
@@ -284,9 +292,10 @@ function updateStats() {
   $("dose").style.color = sepDose > 0 ? "var(--red)" : "var(--text)";
 
   const pct = (dose / state.meta.radiation.career_limit_mSv) * 100;
+  const ref = state.meta.radiation.career_limit_mSv;
   $("dosepct").textContent = sepDose > 0
-    ? `+25 mSv simulated solar event · ${pct.toFixed(2)}% of career limit`
-    : `${pct.toFixed(3)}% of career limit · background only`;
+    ? `+25 mSv SIM · ${pct.toFixed(2)}% / ${ref} mSv ref`
+    : `${pct.toFixed(3)}% / ${ref} mSv ref · GCR`;
   $("slope").textContent = `${m.max_slope_deg.toFixed(0)}°`;
 
   const left = m.remaining_min;
@@ -294,29 +303,24 @@ function updateStats() {
   $("budgetleft").style.color = left < 0 ? "var(--red)" : left < 45 ? "var(--amber)" : "var(--green)";
 
   const adv = $("thermaladv");
-  const p10c = state.meta.temperature.p10_c;
+  const p10s = state.meta.temperature.p10_c.toFixed(1).replace("-", "\u2212");
   adv.hidden = false;
   if (m.cold_fraction > 0.01) {
     adv.className = "alert cold";
-    adv.textContent =
-      `Thermal: ${(m.cold_fraction * 100).toFixed(0)}% of this route lies in the coldest ` +
-      `decile of the box (≤ ${p10c.toFixed(1)} °C). Relative terrain measure — not a suit limit.`;
+    adv.textContent = `THERMAL ${(m.cold_fraction * 100).toFixed(0)}% BELOW · P10 ${p10s}°`;
   } else {
     adv.className = "alert clear";
-    adv.textContent =
-      `Thermal: route stays out of the coldest decile of the box (≤ ${p10c.toFixed(1)} °C). ` +
-      `Relative terrain measure — not a suit limit.`;
+    adv.textContent = `THERMAL CLEAR · P10 ${p10s}°`;
   }
 
   const pnr = $("pnr");
   if (m.pnr_index < state.path.length) {
     pnr.hidden = false;
-    pnr.textContent = `POINT OF NO RETURN at ${fmtDist(m.pnr_distance_m)} — turn back here.`;
+    pnr.textContent = `EST PNR ${fmtDist(m.pnr_distance_m)}`;
   } else {
     pnr.hidden = true;
   }
 
-  $("solve").textContent = `${m.ms} ms`;
   const [alon, alat] = worldToLonLat(state.A.x, state.A.y);
   const [blon, blat] = worldToLonLat(state.B.x, state.B.y);
   $("a-lonlat").textContent = `${alat.toFixed(4)}°, ${alon.toFixed(4)}°`;
@@ -660,7 +664,7 @@ function markActive() {
   $("set-a").classList.toggle("on", state.active === "a");
   $("set-b").classList.toggle("on", state.active === "b");
   $("hint").textContent =
-    state.active === "a" ? "click the map to move the START" : "click the map to move the DESTINATION";
+    state.active === "a" ? "PLACE A" : "PLACE B";
 }
 
 $("set-a").addEventListener("click", () => { state.active = "a"; markActive(); });
@@ -699,5 +703,5 @@ markActive();
 $("budget-val").textContent = `${$("budget").value} min`;
 boot().catch((err) => {
   document.body.innerHTML =
-    `<pre style="color:#e2574c;padding:24px;font:13px ui-monospace">Failed to load: ${err.message}\n\nServe the project root over HTTP:\n  python3 -m http.server 8000\n  open http://localhost:8000/web/</pre>`;
+    `<pre style="color:#e2574c;padding:24px;font:13px ui-monospace">A.R.E.S failed to load: ${err.message}\n\nServe the project root over HTTP:\n  python3 -m http.server 8000\n  open http://localhost:8000/web/</pre>`;
 });

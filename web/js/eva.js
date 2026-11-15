@@ -1,7 +1,7 @@
 // Suit-aware traversal model. Turns a pixel path into mission numbers.
 
 export function evaluate(path, ctx) {
-  const { W, cell, elev, cost, temp8, slope8, tempMin, tempMax, p10, cfg } = ctx;
+  const { W, cell, elev, cost, temp8, slope8, rough8, tempMin, tempMax, p10, cfg } = ctx;
   const coldLine = typeof p10 === "number" ? p10 : -Infinity;
   const budgetMin = cfg.eva_budget_min;
   const rate = cfg.dose_rate_mSv_day;
@@ -48,8 +48,10 @@ export function evaluate(path, ctx) {
     else descent -= dz;
 
     const fSlope = dz >= 0 ? 1 / (1 + 1.5 * tan) : 1 / (1 + 0.5 * tan);
-    const c = Math.max(1, Math.min(254, cost[i]));
-    const fTerrain = 1 / (1 + 0.012 * (c - 1));
+    // terrain penalty from ROUGHNESS only. The cost raster already embeds slope,
+    // so using cost here would count slope twice.
+    const rn = rough8 ? rough8[i] / 255 : 0;
+    const fTerrain = 1 / (1 + 0.48 * rn);
 
     const v = Math.max(0.15, cfg.v0_mps * fSlope * fTerrain);
     const dt = d / v;
