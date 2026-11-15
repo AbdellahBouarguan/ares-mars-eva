@@ -94,7 +94,8 @@ Listed deliberately, because naming what is absent is part of the claim:
   via USGS Astrogeology
 - MSL RAD — NASA/JPL/SwRI
 - MSL REMS — NASA/JPL/Centro de Astrobiología (published as an outreach feed)
-- J. A. Hoffman, *EVA: Walking and Working in Space*
+- J. A. Hoffman, *EVA: Walking and Working in Space* — background reading on
+  extra-vehicular activity; not redistributed
 - Software: rasterio, pyproj, numpy, scipy, Pillow; A\* implemented from first
   principles
 - No NASA, JPL or mission logos are used anywhere in the product or the demo

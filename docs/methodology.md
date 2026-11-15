@@ -534,6 +534,6 @@ app: every raster shares its grid, so a pixel coordinate is the same everywhere.
 - THEMIS IR Day 100m Global Mosaic v12 — NASA/JPL/Arizona State University, via USGS Astrogeology
 - MSL RAD — NASA/JPL/SwRI
 - MSL REMS — NASA/JPL/Centro de Astrobiología (outreach feed)
-- Hoffman, J. A., *EVA: Walking and Working in Space* — reference material in `brainstorming-initial-research/`
+- Hoffman, J. A., *EVA: Walking and Working in Space* — consulted for EVA consumables, thermal control and mobility limits. Not redistributed.
 - Software: rasterio, pyproj, numpy, scipy, Pillow; A\* implemented from first principles, no routing library
 - No NASA, JPL or mission logos are used anywhere in the product

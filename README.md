@@ -1,7 +1,7 @@
 # A.R.E.S
 
-**Advanced Regolith & Environmental Survivor** — an EVA traverse planner for the
-first astronauts on Mars.
+**Advanced Regolith & Environmental Survivor** — a traverse planner for
+extra-vehicular activity (EVA) on Mars.
 
 Existing Mars maps answer *"what is this place?"* A.R.E.S answers *"can two
 people in suits walk this route and get back?"*
@@ -158,7 +158,8 @@ Full treatment: [`docs/methodology.md`](docs/methodology.md) §10–§12.
 Mars data: NASA/JPL, NASA/JPL-Caltech/MSSS, NASA/JPL/Arizona State University,
 NASA/JPL/SwRI, NASA/JPL/Centro de Astrobiología, USGS Astrogeology.
 
-Reference material: J. A. Hoffman, *EVA: Walking and Working in Space*
-(`brainstorming-initial-research/`).
+Background reading: J. A. Hoffman, *EVA: Walking and Working in Space* — consulted
+at the start of the project to understand what extra-vehicular activity actually
+involves (consumables, thermal control, mobility limits). Not redistributed here.
 
 No NASA, JPL or mission logos are used anywhere in this project.
