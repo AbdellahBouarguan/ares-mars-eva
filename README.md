@@ -34,40 +34,44 @@ Every dataset is NASA or NASA-derived, reached through the resources the
 
 Per-dataset provenance, and the limitations of each: [`docs/data-manifest.csv`](docs/data-manifest.csv).
 
-## Quick start
+## Run it
 
-Python 3.10 or newer. No npm, no bundler, no build step, and no network
-connection once the page has loaded.
+Python 3.10 or newer is the only requirement. There is nothing to install, no
+build step, and no network connection once the page has loaded.
 
 ```bash
 git clone https://github.com/AbdellahBouarguan/ares-mars-eva.git
 cd ares-mars-eva
-
-python3 -m venv .venv
-./.venv/bin/pip install -r pipeline/requirements.txt   # only to rebuild data
-
 ./serve.sh
 ```
 
-Open **http://localhost:8000/web/**.
+Open **http://localhost:8000/web/**. The rasters in `data/out/` are committed,
+so the interface runs immediately. The clone is about 24 MB.
 
 `serve.sh` copies `web/` and `data/out/` into a temporary directory before
 serving, so the raw DEM, the virtualenv and the research folder are never
-exposed.
+exposed. It binds all interfaces and prints the LAN address, which you can pass
+to anyone on the same network.
 
-### Rebuilding the data
+On Windows without bash, run `python -m http.server 8000` from the repository
+root and open `http://localhost:8000/web/`.
 
-The processed rasters in `data/out/` are committed. The app runs from them
-directly, so a rebuild is optional.
+If the executable bit is missing, `bash serve.sh` does the same thing.
 
-To regenerate them you need the raw Mars Trek exports described in
-[`data/raw/README.md`](data/raw/README.md), then:
+## Rebuild the data (optional)
+
+Needed only if you change the pipeline or move the working box. The geospatial
+stack is used exclusively by `pipeline/`; the web app imports none of it.
 
 ```bash
+python3 -m venv .venv
+./.venv/bin/pip install -r pipeline/requirements.txt
 bash pipeline/run_all.sh
 ```
 
-With no raw data at all, synthetic terrain is enough to bring the interface up:
+Rebuilding from source requires the raw Mars Trek exports described in
+[`data/raw/README.md`](data/raw/README.md). With no raw data at all, synthetic
+terrain is enough to bring the interface up:
 
 ```bash
 ./.venv/bin/python pipeline/99_stub.py
