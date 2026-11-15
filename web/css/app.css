@@ -573,38 +573,38 @@ input[type="range"]::-moz-range-thumb {
   top: 46px;
   left: 0;
   right: 0;
-  height: 38px;
+  height: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 11px;
+  gap: 13px;
   background:
     repeating-linear-gradient(
       135deg,
-      rgba(226, 87, 76, 0.26) 0 12px,
-      rgba(226, 87, 76, 0.10) 12px 24px
+      rgba(205, 34, 24, 0.40) 0 14px,
+      rgba(120, 12, 10, 0.20) 14px 28px
     ),
-    rgba(34, 8, 8, 0.94);
-  border-top: 1px solid rgba(255, 74, 61, 0.7);
-  border-bottom: 1px solid rgba(255, 74, 61, 0.7);
+    #260303;
+  border-top: 1px solid rgba(255, 74, 61, 0.85);
+  border-bottom: 1px solid rgba(255, 74, 61, 0.85);
   box-shadow:
-    0 0 30px rgba(226, 87, 76, 0.45),
-    inset 0 0 22px rgba(226, 87, 76, 0.28);
+    0 0 38px rgba(200, 26, 18, 0.55),
+    inset 0 0 26px rgba(180, 20, 14, 0.45);
   backdrop-filter: blur(6px);
   z-index: 19;
   font-family: var(--mono);
-  font-size: 11.5px;
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #ffd6d1;
-  text-shadow: 0 0 14px rgba(226, 87, 76, 0.85);
+  color: #ffffff;
+  text-shadow: 0 0 16px rgba(255, 80, 60, 0.9), 0 1px 2px rgba(0, 0, 0, 0.95);
   white-space: nowrap;
 }
 
 .mw-dot {
-  width: 9px;
-  height: 9px;
+  width: 11px;
+  height: 11px;
   border-radius: 50%;
   background: #ff4a3d;
   box-shadow: 0 0 14px rgba(255, 74, 61, 1);
@@ -628,10 +628,10 @@ body.sep-on::after {
   inset: 0;
   pointer-events: none;
   z-index: 14;
-  box-shadow: inset 0 0 150px rgba(226, 87, 76, 0.24);
+  box-shadow: inset 0 0 170px rgba(190, 22, 16, 0.32);
 }
 
-body.sep-on .panel { top: 100px; max-height: calc(100vh - 250px); }
+body.sep-on .panel { top: 112px; max-height: calc(100vh - 262px); }
 
 @media (prefers-reduced-motion: reduce) {
   .mw-dot { animation: none; }
